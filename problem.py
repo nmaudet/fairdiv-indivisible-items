@@ -145,7 +145,6 @@ class Problem(object):
         utilities = {}
         
         
-        # TODO: if centralized, enforce agent 0 gets 0 utility
         # should be ok via the topology
         for i in range(n):  # creating the agents
             utilities = generateUtilities(n,resources,culture)
@@ -201,14 +200,10 @@ class Problem(object):
     
     
     
-#TODO: create with agents and ressoures instead, then infer n/m?    
     
     
 ###############################################################################
 
-#TODO: we may define at least ordinal agents, who ranks simply resources, cardinal agents who assign utilities 
-#TODO: stick to the preflib representation of profiles (for ordinal profiles)
-#NOTE: not really suited, as the dico representation vote : number of voters is anonymous
 
 class Agent(object): 
     
@@ -259,16 +254,5 @@ class Agent(object):
 
         
     
-###############################################################################
 
-#p1 = Problem(4,6,'empty','random','complete')
-#print(p1)
-#print(p1.printAllocation())
-#p1.setUtilities(
-#[{'r0':0,'r1':0,'r2':0,'r3':0,'r4':0,'r5':0},\
-#{'r0':1,'r1':2,'r2':5,'r3':3,'r4':7,'r5':2},\
-#{'r0':2,'r1':6,'r2':8,'r3':1,'r4':1,'r5':2},\
-#{'r0':5,'r1':4,'r2':4,'r3':3,'r4':2,'r5':2}]
-#)
-#print(p1)
     

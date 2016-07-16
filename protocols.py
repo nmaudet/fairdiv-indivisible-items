@@ -5,7 +5,7 @@ Created on Mon Jul 11 19:34:47 2016
 @author: nicolas
 """
 import random
-import fairnessMeasures
+import fairnessmeasures
 from problem import Problem
 
 
@@ -149,65 +149,6 @@ def randomDynamics(p):
 
      
 
-###############################################################################
-# Testing
 
-'''
-p1 = Problem(4,6,'borda','auctioneer','centralized')
-# recall that we need to create the auctionneer agent
-print (p1)
-print(p1.printAllocation())
-
-s= generateSequence(3,6,'balanced')
-#print(generateSequence(3,6,'balanced'))
-pickingSequence(p1,s)
-print(p1.printAllocation())
-
-
-print (fairnessMeasures.envyMatrix(p1))
-'''
-
-#p2 = Problem(6,12,'borda','random','complete')
-#print (p2)
-#print(p2.printAllocation())
-
-#randomDynamics(p2)
-#print(p2.printAllocation())
-
-#print (fairnessMeasures.envyMatrix(p2))
-
-'''
-import copy
-
-p1 = Problem(4,6,'empty','auctioneer','centralized')
-
-
-p1.setUtilities(
-[{'r0':0,'r1':0,'r2':0,'r3':0,'r4':0,'r5':0},\
-{'r0':1,'r1':2,'r2':5,'r3':3,'r4':7,'r5':2},\
-{'r0':2,'r1':6,'r2':8,'r3':1,'r4':1,'r5':2},\
-{'r0':5,'r1':4,'r2':4,'r3':3,'r4':2,'r5':2}]
-)
-
-s = [1,2,3,2,3,1]
-
-p2 = copy.deepcopy(p1)
-
-pickingSequence(p2,s)
-print(p2.printAllocation())
-
-p3 = copy.deepcopy(p1)
-s = [1,2,3,3,2,1]
-pickingSequence(p3,s) 
-print(p3.printAllocation())
-'''
-
-'''
-p1 = Problem(4,9,'uniform','auctioneer','centralized')
-
-print(p1)
-
-lipton(p1)
-'''
 
 

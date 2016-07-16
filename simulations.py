@@ -8,12 +8,11 @@ Created on Wed Jul 13 22:43:45 2016
 from problem import Problem
 import mipsolving
 import protocols
-import fairnessMeasures
-from fairnessMeasures import fairnessDashboard
+from fairnessmeasures import fairnessDashboard
 import numpy as np
 
 
-def simulation(sample_size,int_agents,int_resources,culture,centralized=True):
+def simulationOpt(sample_size,int_agents,int_resources,culture):
     '''
     @sample_size: number of xps for each parameter configuration
     @int_agents: list of values to be considered
@@ -59,7 +58,7 @@ def simulationPickingSequences(sample_size,n,m,sequence,culture,verbose=False):
     return
                 
                 
-def simulationLipton(sample_size,n,m,culture,verbose=False):  
+def simulationLipton(sample_size,n,m,culture,verbose=False):
     d = fairnessDashboard()    
         
     for xp in range(sample_size):
@@ -74,15 +73,3 @@ def simulationLipton(sample_size,n,m,culture,verbose=False):
             
     
             
-###############################################################################
-# Testing
-###############################################################################    
-
-'''
-tested_resources = list(range(6,12))
-print(simulation(20,[6],tested_resources,'normalized',centralized=True))
-'''
-
-#print(simulationPickingSequences(1000,4,7,[3,1,2,1,2,1,3],'borda',verbose=False))
-
-simulationLipton(1,4,6,'borda',verbose=True)
