@@ -82,7 +82,6 @@ def checkCycle(g):
     returns a cycle or empty list if none
     '''
     visited = dict([(x,0) for x,envied in g.items()])
-    #TODO: need to return a cycle if there is one
     path =[]
     cycle_found = [False] 
 
@@ -193,35 +192,3 @@ class fairnessDashboard(object):
 
 
 
-###############################################################################
-# Testing
-    
-'''    
-    
-p1 = Problem(4,4,'borda','random','complete')
-p2 = Problem(4,4,'uniform','random','complete')
-m2 = envyMatrix(p2)
-print (p2.visibility_graph)
-print (m2)
-print (proportionality(p2))
-eg2 = buildEnvyGraph(m2)
-print (eg2)
-
-print (checkCycle(eg2))
-
-#print (checkCycle({0: [], 1: [0, 3], 2: [1], 3: [0]}))
-#print (checkCycle({0: [1, 2], 1: [2], 2: [], 3: [1, 2]}))
-    
-# does not return correct cycle
-print (checkCycle({0: [1, 2], 1: [0], 2: [0, 1], 3: [0, 1, 2]}))
-'''
-
-#print (checkCycle({0: [1, 2], 1: [0], 2: [0, 1], 3: [0, 1, 2]}))
-
-#print (checkCycle({0: [2], 1: [0, 3], 2: [1], 3: [0]}))
-
-#print (checkCycle({0: [1, 2], 1: [2], 2: [], 3: [1, 2]}))
-
-#print (checkCycle({0: [], 1: [0, 2, 3], 2: [0, 3], 3: [0, 1]}))
-
-#print (checkCycle({0: [], 1: [2, 3], 2: [3], 3: [1]}))
