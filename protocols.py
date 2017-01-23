@@ -4,8 +4,9 @@ Created on Mon Jul 11 19:34:47 2016
 
 @author: nicolas
 """
+import heapq
 import random
-import fairnessmeasures
+import fairnessMeasures
 from problem import Problem
 
 
@@ -13,8 +14,49 @@ from problem import Problem
 # Adjusted Winner Procedure
 ###############################################################################
 
-def adujstedwinner():
-    pass
+def adjustedWinner(p,verbose=True):
+    '''
+    runs the adjusted winner on problem p
+    to be used with centralized problem
+    and only two agents
+    '''
+    if p.n!=3:
+        print("Warning: Adjusted Winner must be used with two agents.")
+        print("Note: Only the two first agents will be considered.")
+    # the allocation phase
+    for r in p.agent[0].hold:
+        if p.agent[1].u[r]>p.agent[2].u[r]:
+            p.agent[1].getItem(r)
+        else:
+            p.agent[2].getItem(r)     
+    if verbose:
+        print ("Allocation phase:")
+        print (p.printAllocation())
+    # happiest / sadest agent
+    if p.agent[1].current_u>p.agent[2].current_u:
+        high, low = 1,2
+    else:
+        high, low = 2,1
+    # ranking the resources (of the rich)
+    h = [] # using a heapqueue with u_h/u_l as comparison value
+    for r in p.agent[high].hold:  
+        ratio = p.agent[high].u[r] / p.agent[low].u[r]
+        ratio = round(ratio,3) # to use the float as a dict key
+        heapq.heappush(h,(ratio,r))
+    print (h)
+    # now inspect resources by priority oder
+    while p.agent[high].current_u>p.agent[low].current_u:
+        _,r = heapq.heappop(h)
+        p.agent[low].getItem(r)
+        p.agent[high].giveItem(r)
+        if verbose:
+            print ("Resource ",r , " moves from ", high, " to ", low)
+    if p.agent[1].current_u != p.agent[2].current_u:
+        part_of_low = (p.agent[low].current_u - p.agent[high].current_u) / \
+        (p.agent[high].u[r]+p.agent[low].u[r])
+        if verbose:
+            print ("Resource ", r, " will be splitted!")
+            print ("Agent ", low, " gets ", round(part_of_low,3), " of resource ", r)
     return
 
 
@@ -53,6 +95,7 @@ def pickingSequence(p,sequence,verbose=False):
         print("The sequence length is different from the number of resources!")
     for i in sequence:
         best_utility = -1
+        best_resource_to_pick=""
         for r in p.agent[0].hold:
             if p.agent[i].u[r]>best_utility:
                 best_utility = p.agent[i].u[r]
