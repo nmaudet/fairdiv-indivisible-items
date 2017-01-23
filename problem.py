@@ -170,6 +170,12 @@ class Problem(object):
         sets the allocation of a problem, 
         @alloc: a boolean array nxm specifying who gets which resource
         '''
+        for i in range(self.n):
+            allocs = alloc[i]
+            self.agent[i].dropItems()
+            for j in range(self.m):
+                if allocs[j]:
+                    self.agent[i].getItem('r'+str(j))
         return
         
     def cycleReallocation(self,agents):
