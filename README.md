@@ -11,10 +11,16 @@ More specifically, we follow the following chapter:
 > Chapitre 12.Cambridge University Press. 
 
 ## Organisation
-The code is divided in three main modules:
-* problem.py
-* protocols.py
-* fairnessmeasures.py
+The code is divided in four main modules:
+* `problem.py` allows to define various problems
+* `fairnessmeasures.py` defines different functions to compute
+  fairness measures
+* `mipsolving.py` implements MIP formulations for fair optimisation problems
+* `protocols.py` implements several protocols discussed in the chapter
+  (adjusted winner, picking sequences, Liption et al., etc.)
+  
+It is accompanied with a Jupyter Notebook illustrating the different
+notions. 
 
 ## Dependencies
 Requires to have installed:
