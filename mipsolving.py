@@ -6,12 +6,15 @@ Created on Tue Jul 12 23:25:48 2016
 """
 
 import pulp
+import math
+import numpy as np
 from problem import Problem
+
+#TODO: introduce parameter to specify whether the allocation must be modified
 
 ###############################################################################
 # The Assignment LP
 ###############################################################################
-
 
 
 def assignmentLP(p,verbose=False):
@@ -54,7 +57,6 @@ def assignmentLP(p,verbose=False):
                 
     return k.varValue
     
-        
 
 
 ###############################################################################
@@ -67,22 +69,22 @@ def envyminimizingLP(p,verbose=False):
     resources = list(range(0,p.m))
     
     
-    envyLP = pulp.LpProblem("Assignment LP",pulp.LpMinimize)
+    envyLP = pulp.LpProblem("Envy Minimizing LP",pulp.LpMinimize)
     
     # creating the variables
 
-    x = pulp.LpVariable.dicts("assignement", (agents, resources),cat = pulp.LpBinary)
-    e = pulp.LpVariable("bound", lowBound = 0)
+    x = pulp.LpVariable.dicts("x", (agents, resources),cat = pulp.LpBinary)
+    e = pulp.LpVariable("envy bound", lowBound = 0) # upBound = 100
     
-    # objective function: maximize k
+    # objective function: minimize e
     
-    envyLP += e
+    envyLP += e, "e: bound on envy"
     
     # each resource assigned to one agent
     for j in resources: 
         envyLP += sum([x[i][j] for i in agents])==1
         
-    # utility of each agent must be higher than k
+    # envy of each agent must be smaller than e
     for i in agents:
         for j in agents: 
             if i != j:
@@ -90,8 +92,14 @@ def envyminimizingLP(p,verbose=False):
         
     # solving and printing
 
-    envyLP.solve()
+    envyLP.solve() # by default COIN-OR
+    #envyLP.solve(pulp.GUROBI())
+
     if verbose:
+        print("Status:", pulp.LpStatus[envyLP.status]) 
+        print(envyLP.objective)  
+        print(pulp.value(envyLP.objective))   
+        envyLP.writeLP("envyLP.lp",mip=True)
         for i in agents:
             for j in resources:
                 if (x[i][j].varValue == 1):
@@ -99,5 +107,50 @@ def envyminimizingLP(p,verbose=False):
     
     return e.varValue
 
+###############################################################################
+# The Nash-meximizing IP
+###############################################################################
+
+def nashproductMIP(p,verbose=False):
+    
+    agents = list(range(1,p.n)) # agent 0 is the auctioneer
+    resources = list(range(0,p.m))
+    
+    
+    nashMIP = pulp.LpProblem("Nash Maximizing MIP",pulp.LpMaximize)
+    
+    # creating the variables
+
+    x = pulp.LpVariable.dicts("x", (agents, resources),cat = pulp.LpBinary)
+    
+    # objective function: maximize nprod
+    
+    nprod = sum([math.log(p.agent[i].u["r"+str(k)])*x[i][k] for k in resources for i in agents]), "log trick"
+    
+    nashMIP += nprod
+
+    # each resource assigned to one agent
+    for j in resources: 
+        nashMIP += sum([x[i][j] for i in agents])==1
+        
+        
+    # solving and printing
+
+    nashMIP.solve() # by default COIN-OR
+    #nashMIP.solve(pulp.GUROBI())
+    
+    sol = np.product([sum([p.agent[i].u["r"+str(k)]*x[i][k].varValue for k in resources]) for i in agents])
 
 
+    if verbose:
+        # The status of the solution is printed to the screen
+        print("Status:", pulp.LpStatus[nashMIP.status]) 
+        print(nashMIP.objective)  
+        print(pulp.value(nashMIP.objective))   
+        nashMIP.writeLP("nashMIP.lp",mip=True)
+        for i in agents:
+            for j in resources:
+                if (x[i][j].varValue == 1):
+                    print ("agent ", i, " gets resource r"+str(j))
+    
+    return sol
