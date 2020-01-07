@@ -7,7 +7,7 @@ Created on Tue Jul  5 09:38:54 2016
 
 '''
 Fair Division of Indivisible Goods
-Companion code for the chapter 12 of the Handbook of CSC 
+Companion code for the chapter 12 of the Handbook of CSC
 '''
 
 import random
@@ -26,9 +26,9 @@ def generateUtilities(n,resources,culture):
         if culture=='gauss':
             for r in resources:
                     intrinsic_utilities[r]=random.randrange(u_min,u_max)
-    
-        for i in range(n): 
-            if culture == 'uniform': # 
+
+        for i in range(n):
+            if culture == 'uniform': #
                 for r in resources:
                     u = random.randrange(u_min,u_max)
                     utilities[r]=u
@@ -52,62 +52,65 @@ def generateUtilities(n,resources,culture):
             all_utilities += utilities
         return utilities
         #TODO: adapt when calling since now all agents utilities are produced
-        
+
 def generateAllocation(n,resources,alloc):
     '''
     returns a dictionary resource:agent
     '''
-    if alloc == 'random':        
+    if alloc == 'random':
     #allocates each resource uniformly at random
         allocation = {r:random.randint(0,n-1) for r in resources}
     elif alloc == 'auctioneer':
-    #allocates all resources to agent 0    
+    #allocates all resources to agent 0
         allocation = {r:0 for r in resources}
     return allocation
-    
+
 def generateTopology(n,topo):
     # complete, centralised, circle
     visibility_graph = {i:[] for i in range(n)}
     exchange_graph = {i:[] for i in range(n)}
-    if topo == 'complete': 
+    if topo == 'empty':
+       for i in range(1,n):
+            exchange_graph[0].append(i)
+    elif topo == 'complete':
         for i in range(n):
             for j in range(n):
-                if i!=j: 
+                if i!=j:
                     visibility_graph[i].append(j)
                     exchange_graph[i].append(j)
     elif topo =='centralized':
         for i in range(1,n):
             exchange_graph[0].append(i)
             for j in range(1,n):
-                if j!=i: 
+                if j!=i:
                     visibility_graph[i].append(j)
     return visibility_graph, exchange_graph
 
 ###############################################################################
 
 class Problem(object):
-    ''' a fair division problem is defined by: 
+    ''' a fair division problem is defined by:
         - a set of m resources
-        - a set of n agents, 
+        - a set of n agents,
         - utilities over the resources
         - an initial allocation of resources
         - a visibility topology (symmetric)
         - an exchange topology (directed)
     '''
-    
+
     def __init__(self,n,m,culture,centralized=True):
         '''
         @n: number of agents
         @m: number of resources
         @culture: generation of utilities
-        @predef_model: 
-        we provide the following pre-defined MARA models: 
-        - centralized: agent 0 gets all resources, 
+        @predef_model:
+        we provide the following pre-defined MARA models:
+        - centralized: agent 0 gets all resources,
         - complete topology, random initial allocation
         - ...
-        
+
         '''
-        
+
         self.n=n
         self.m=m
         self.agent = []
@@ -116,45 +119,45 @@ class Problem(object):
         resources = []
         for i in range(m):
             resources.append("r"+str(i))
-            
+
         self.resources= resources
-        
+
         self.centralized = centralized
-        
+
         if centralized:
-            
+
             # calling the function generating initial allocation
             allocation = generateAllocation(n,resources,'auctioneer')
             #print (allocation)
-        
+
             # calling the function generating topologies
             visibility, exchange = generateTopology(n,'centralized')
-            
+
         else: # decentrlized
             # calling the function generating initial allocation
             allocation = generateAllocation(n,resources,'random')
             #print (allocation)
-        
+
             # calling the function generating topologies
             visibility, exchange = generateTopology(n,'complete')
-            
+
         self.visibility_graph = visibility
         self.exchange_graph = exchange
-        
+
         # calling the function generating the utilities
         utilities = {}
-        
-        
+
+
         # should be ok via the topology
         for i in range(n):  # creating the agents
             utilities = generateUtilities(n,resources,culture)
             self.agent.append(Agent(utilities,[r for (r,j) in allocation.items() if j==i]))
 
-            
-            
+
+
         return
-        
-        
+
+
     def setUtilities(self,utilities):
         '''
         sets utilities of a problem,
@@ -164,10 +167,10 @@ class Problem(object):
             utility = utilities[i]
             self.agent[i].u= utility
         return
-        
+
     def setAllocation(self,alloc):
         '''
-        sets the allocation of a problem, 
+        sets the allocation of a problem,
         @alloc: a boolean array nxm specifying who gets which resource
         '''
         for i in range(self.n):
@@ -177,7 +180,7 @@ class Problem(object):
                 if allocs[j]:
                     self.agent[i].getItem('r'+str(j))
         return
-        
+
     def cycleReallocation(self,agents):
         '''
         @agents: list (cycle) of agents [x_1,x_2, ... xn]
@@ -191,38 +194,50 @@ class Problem(object):
             self.agent[i].getItems(items_of_next_agent)
         self.agent[agents[(idx+1)%(len(agents))]].getItems(items_of_first_agent)
         return
-        
+
     def __str__(self):
         s=""
-        for i in range(self.n):
+        if self.centralized:
+            first = 1
+        else:
+            first = 0
+        for i in range(first,self.n):
             s += "agent " + str(i) + str(self.agent[i]) + "\n"
         return s
-        
+
     def printAllocation(self):
         s="=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n"
-        for i in range(self.n):
+        if self.centralized:
+            s = "auctioneer " + str(self.agent[0].hold).rjust(35) + "\t" + "\n"
+            first = 1
+        else:
+            first = 0
+        for i in range(first,self.n):
             s += "agent " + str(i).rjust(2) + str(self.agent[i].hold).rjust(35) + "\t" + str(self.agent[i].current_u).rjust(2)+ "\n"
         return (s)
-    
-    
-    
-    
-    
+
+
+
+
+
 ###############################################################################
 
 
-class Agent(object): 
-    
+class Agent(object):
+
     def __init__(self,utility,resources):
         '''
         '''
         self.u= utility # dictionary of utility for resources
         self.hold = resources # list of resources held by agent
         self.current_u = sum([self.u[r] for r in resources]) # current utility enjoyed by agent
-        
+
     def __str__(self):
-        return str(self.u)
-        
+        '''
+        returns ordered dictionary of (items,utilities) for an agent
+        '''
+        return str(dict(sorted(self.u.items(), key=lambda x: x[0])))
+
     def getItem(self,r):
         '''
         @r: a single item
@@ -230,7 +245,7 @@ class Agent(object):
         self.hold.append(r)
         self.current_u += self.u[r]
         return
-        
+
     def getItems(self,lr):
         '''
         @lr: a list of items
@@ -238,27 +253,31 @@ class Agent(object):
         for r in lr:
             self.getItem(r)
         return
-        
+
     def giveItem(self,r):
         if r not in self.hold:
             print ("agent ", self, " does not hold ", r, "!!!")
         self.hold.remove(r)
         self.current_u -= self.u[r]
         return
-        
+
+    def giveItemTo(self,r,a):
+        '''
+        the agent gives an item to another agent
+        '''
+        self.giveItem(r)
+        a.getItem(r)
+
     def giveItems(self,lr):
         for r in lr:
             self.giveItem(r)
         return
-        
+
     def dropItems(self):
+        '''
+        dropping all the items
+        '''
         self.hold=[]
         self.current_u = 0
-        
-    #TODO: replace by dropItems        
-    
 
-        
-    
-
-    
+    #TODO: replace by dropItems

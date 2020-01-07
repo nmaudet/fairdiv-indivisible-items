@@ -8,7 +8,7 @@ Created on Wed Jul 13 22:43:45 2016
 from problem import Problem
 import mipsolving
 import protocols
-from fairnessmeasures import fairnessDashboard
+from fairness_measures import fairnessDashboard
 import numpy as np
 
 
@@ -21,7 +21,7 @@ def simulationOpt(sample_size,int_agents,int_resources,culture):
     envies = np.zeros((len(int_agents),len(int_resources)))
     ef_ratios = np.zeros((len(int_agents),len(int_resources)))
     for idx_agent,n in enumerate(int_agents):
-        for idx_res,m in enumerate(int_resources): 
+        for idx_res,m in enumerate(int_resources):
             total_envy = 0
             nb_ef = 0
             for xp in range(sample_size):
@@ -36,8 +36,8 @@ def simulationOpt(sample_size,int_agents,int_resources,culture):
             envies[idx_agent][idx_res] = mean_envy
             ef_ratios[idx_agent][idx_res]=ef_ratio
     return envies,ef_ratios
-   
-         
+
+
 def simulationPickingSequences(sample_size,n,m,sequence,culture,verbose=False):
     '''
     for a given sequence, runs several simulations
@@ -45,8 +45,8 @@ def simulationPickingSequences(sample_size,n,m,sequence,culture,verbose=False):
     @n: nb of agents
     @m: nb of resources
     '''
-    d = fairnessDashboard()    
-    
+    d = fairnessDashboard()
+
     for xp in range(sample_size):
         p = Problem(n,m,culture,centralized=True)
         protocols.pickingSequence(p,sequence,verbose)
@@ -56,11 +56,11 @@ def simulationPickingSequences(sample_size,n,m,sequence,culture,verbose=False):
         d.update(p)
     print(d)
     return
-                
-                
+
+
 def simulationLipton(sample_size,n,m,culture,verbose=False):
-    d = fairnessDashboard()    
-        
+    d = fairnessDashboard()
+
     for xp in range(sample_size):
         p = Problem(n,m,culture,centralized=True)
         protocols.lipton(p,verbose)
@@ -70,6 +70,3 @@ def simulationLipton(sample_size,n,m,culture,verbose=False):
         d.update(p)
     print(d)
     return
-            
-    
-            
