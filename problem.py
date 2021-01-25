@@ -128,7 +128,6 @@ class Problem(object):
 
             # calling the function generating initial allocation
             allocation = generateAllocation(n,resources,'auctioneer')
-            #print (allocation)
 
             # calling the function generating topologies
             visibility, exchange = generateTopology(n,'centralized')
@@ -166,6 +165,15 @@ class Problem(object):
         for i in range(self.n):
             utility = utilities[i]
             self.agent[i].u= utility
+        return
+
+
+    def setVisibilityGraph(self,graph):
+        '''
+        sets the visibility graph of a problem
+        @graph: input graph as a dico
+        '''
+        self.visibility_graph = graph
         return
 
     def setAllocation(self,alloc):
