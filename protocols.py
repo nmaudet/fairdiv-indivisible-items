@@ -19,6 +19,7 @@ def adjustedWinner(p,verbose=True):
     runs the adjusted winner on problem p
     to be used with centralized problem
     and only two agents
+    returns utility enjoyed by agents, and split of the resource 
     '''
     if p.n!=3:
         print("Warning: Adjusted Winner must be used with two agents.")
@@ -58,14 +59,17 @@ def adjustedWinner(p,verbose=True):
 
     # moving item r would have made low become high
     # we need to split r
+    part_of_low = 0
+    u = p.agent[1].current_u 
     if p.agent[1].current_u != p.agent[2].current_u:
         part_of_low = (p.agent[high].current_u - p.agent[low].current_u ) / \
         (p.agent[high].u[r]+p.agent[low].u[r])
+        u = p.agent[low].current_u + round(part_of_low,3)*p.agent[low].u[r]
         if verbose:
             print ("Resource ", r, " will be splitted!")
             print ("Agent ", low, " gets ", round(part_of_low,3), " of resource ", r)
-            print ("Both agents get utility:", p.agent[low].current_u + round(part_of_low,3)*p.agent[low].u[r])
-    return
+            print ("Both agents get utility:", u)
+    return u, part_of_low
 
 
 ###############################################################################
